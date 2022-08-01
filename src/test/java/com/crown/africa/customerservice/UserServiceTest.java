@@ -54,6 +54,7 @@ public class UserServiceTest {
                 .firstName("test2")
                 .lastName("test2")
                 .email("test@gmail.com")
+                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
                 .build();
         //assert
         assertThrows(AuthException.class, () -> userService.createUser(request2));
@@ -78,9 +79,7 @@ public class UserServiceTest {
         //when
         userService.createUser(request);
         assertThat(userService.getAllUsers().size(), is(1));
-
         assertThrows(UserException.class,()-> userService.getUser("2"));
-
     }
 
 }
