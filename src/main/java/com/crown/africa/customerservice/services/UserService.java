@@ -10,4 +10,4 @@ public interface UserService {
     User createUser(UserRequest userRequest) throws AuthException;
     User getUser(String id);
     List<User> getAllUsers();
-;}
+    ;}

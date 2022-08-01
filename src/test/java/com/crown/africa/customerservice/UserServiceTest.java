@@ -2,11 +2,14 @@ package com.crown.africa.customerservice;
 
 import com.crown.africa.customerservice.data.models.BillingDetails;
 import com.crown.africa.customerservice.data.models.User;
+import com.crown.africa.customerservice.data.repository.UserRepository;
 import com.crown.africa.customerservice.exception.AuthException;
 import com.crown.africa.customerservice.exception.UserException;
 import com.crown.africa.customerservice.services.UserService;
 import com.crown.africa.customerservice.web.payload.request.UserRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -24,6 +27,9 @@ public class UserServiceTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    UserRepository userRepository;
+
     UserRequest request;
     @BeforeEach
     void setUp(){
@@ -40,8 +46,16 @@ public class UserServiceTest {
 
     @Test
     void testThatUserCanBeCreated(){
-        userService.createUser(request);
+        User user = userService.createUser(request);
         assertThat(userService.getAllUsers().size(), is(1));
+        assertThat(user.getBillingDetails().getAccountNumber(), is("1234567890-01"));
+        assertThat(user.getBillingDetails().getTarrif(), is(BigDecimal.ONE));
+    }
+
+    @Test
+    @DisplayName("If account number doesnt end with -01 throws exception")
+    void testThat_ThrowsException_WhenAccountNumberIsInvalid(){
+
     }
 
     @Test
@@ -80,6 +94,11 @@ public class UserServiceTest {
         userService.createUser(request);
         assertThat(userService.getAllUsers().size(), is(1));
         assertThrows(UserException.class,()-> userService.getUser("2"));
+    }
+
+    @AfterEach
+    void tearDown(){
+        userRepository.deleteAll();
     }
 
 }
