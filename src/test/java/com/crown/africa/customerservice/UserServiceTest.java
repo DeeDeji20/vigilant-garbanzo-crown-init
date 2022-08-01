@@ -4,6 +4,7 @@ import com.crown.africa.customerservice.data.models.BillingDetails;
 import com.crown.africa.customerservice.data.models.User;
 import com.crown.africa.customerservice.data.repository.UserRepository;
 import com.crown.africa.customerservice.exception.AuthException;
+import com.crown.africa.customerservice.exception.InvalidAccountNumberException;
 import com.crown.africa.customerservice.exception.UserException;
 import com.crown.africa.customerservice.services.UserService;
 import com.crown.africa.customerservice.web.payload.request.UserRequest;
@@ -55,7 +56,17 @@ public class UserServiceTest {
     @Test
     @DisplayName("If account number doesnt end with -01 throws exception")
     void testThat_ThrowsException_WhenAccountNumberIsInvalid(){
-
+        BillingDetails billingDetails = new BillingDetails();
+        UserRequest request2 = UserRequest
+                .builder()
+                .id("2")
+                .firstName("test2")
+                .lastName("test2")
+                .email("test@gmail.com")
+//                .billingDetails(new BillingDetails("1234567890-02", BigDecimal.ONE))
+                .build();
+        //assert
+        assertThrows(InvalidAccountNumberException.class, () -> billingDetails.setAccountNumber("1234567890-02"));
     }
 
     @Test
