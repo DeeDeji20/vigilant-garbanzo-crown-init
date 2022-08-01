@@ -15,7 +15,7 @@ public class BillingDetails {
 
     public void setAccountNumber(String accountNumber) {
         String[] splitString = accountNumber.split("-");
-        if (!splitString[1].equals("01")) throw new InvalidAccountNumberException("Invalid account number");
+        if (!splitString[1].equals("01")) throw new InvalidAccountNumberException("Account number does not end with -01");
         this.accountNumber = accountNumber;
     }
 }

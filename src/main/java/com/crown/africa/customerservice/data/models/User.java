@@ -15,8 +15,4 @@ public class User {
     @NotBlank(message = "Email is mandatory") @Email
     private String email;
     private BillingDetails billingDetails;
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

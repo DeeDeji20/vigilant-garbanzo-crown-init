@@ -5,6 +5,7 @@ import com.crown.africa.customerservice.data.models.User;
 import com.crown.africa.customerservice.data.repository.UserRepository;
 import com.crown.africa.customerservice.exception.AuthException;
 import com.crown.africa.customerservice.exception.InvalidAccountNumberException;
+import com.crown.africa.customerservice.exception.InvalidEmailException;
 import com.crown.africa.customerservice.exception.UserException;
 import com.crown.africa.customerservice.services.UserService;
 import com.crown.africa.customerservice.web.payload.request.UserRequest;
@@ -21,9 +22,7 @@ import java.math.BigDecimal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-//import static org.junit.jupiter.api.AssertTrue.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @DataMongoTest
@@ -69,24 +68,26 @@ public class UserServiceTest {
 //                .billingDetails(new BillingDetails("1234567890-02", BigDecimal.ONE))
                 .build();
         //assert
-        assertThrows(InvalidAccountNumberException.class, () -> billingDetails.setAccountNumber("1234567890-02"));
+        Throwable exception = assertThrows(InvalidAccountNumberException.class, () -> billingDetails.setAccountNumber("1234567890-02"));
+        assertThat(exception.getMessage(), is("Account number does not end with -01"));
     }
 
 
     @Test
-    void testThatWhenAccountNumberIsInvalid_ThrosException(){
+    void testThatWhenAccountNumberEndsWithvalueThatIsNot01_ThrowsException1(){
         UserRequest request2 = UserRequest
                 .builder()
                 .id("2")
                 .firstName("test2")
                 .lastName("test2")
                 .email("test@gmail.com")
-                .billingDetails(new BillingDetails("1234567890-02", BigDecimal.ONE))
+                .billingDetails(new BillingDetails("1234567890-02", BigDecimal.valueOf(1.5)))
                 .build();
-        assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
+        Throwable exception = assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
+        assertThat(exception.getMessage(), is("Account number does not end with -01"));
     }
     @Test
-    void testThatWhenAccountNumberIsInvalid_ThrowsException(){
+    void testThatWhenAccountNumberDoesNotEndWith01_ThrowsException2(){
         UserRequest request2 = UserRequest
                 .builder()
                 .id("2")
@@ -95,21 +96,23 @@ public class UserServiceTest {
                 .email("test@gmail.com")
                 .billingDetails(new BillingDetails("1234567890", BigDecimal.ONE))
                 .build();
-        assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
+        Throwable exception = assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
+        assertThat(exception.getMessage(), is("Account number does not end with -01"));
     }
 
-//    @Test
-//    void testThatWhenEmailIsInvalid_ThrowsException(){
-//        UserRequest request2 = UserRequest
-//                .builder()
-//                .id("2")
-//                .firstName("test2")
-//                .lastName("test2")
-//                .email("test")
-//                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
-//                .build();
-////        assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
-//    }
+    @Test
+    void testThatWhenEmailIsInvalid_ThrowsException(){
+        UserRequest request2 = UserRequest
+                .builder()
+                .id("2")
+                .firstName("test2")
+                .lastName("test2")
+                .email("test")
+                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
+                .build();
+        Throwable exception = assertThrows(InvalidEmailException.class, () -> userService.createUser(request2));
+        assertThat(exception.getMessage(), is("Enter a valid email"));
+    }
 
     @Test
     void testThatUserCannotCreateAccountWithEmailThatAlreadyExist_throwException() {
@@ -124,7 +127,8 @@ public class UserServiceTest {
                 .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
                 .build();
         //assert
-        assertThrows(AuthException.class, () -> userService.createUser(request2));
+        Throwable exception = assertThrows(AuthException.class, () -> userService.createUser(request2));
+        assertThat(exception.getMessage(), is("Email already exists"));
     }
 
     @Test
@@ -142,7 +146,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testThatUserCannotFindUserByEmail_throwException() {
+    void testThatGEtUserThatDoesNotExist_throwsException() {
         //when
         userService.createUser(request);
         assertThat(userService.getAllUsers().size(), is(1));
