@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService{
     private void validateuserDetails(UserRequest userRequest) {
         if (!validateUserEmail(userRequest).matches()) throw new InvalidEmailException("Enter a valid email");
         if  (validateEmail(userRequest.getEmail())) throw new AuthException("Email already exists");
+        if (userRequest.getBillingDetails().getAccountNumber().split("-01")[0].length() < 10) throw new InvalidAccountNumberException("Account number cannot be less than 10 digits");
         if (!userRequest.getBillingDetails().getAccountNumber().endsWith("-01")) throw new InvalidAccountNumberException("Account number does not end with -01");
 //        if (!isValidAccountnumber(userRequest)) throw new InvalidAccountNumberException("Not a valid account number");
     }

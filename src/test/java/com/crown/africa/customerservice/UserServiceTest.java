@@ -9,8 +9,6 @@ import com.crown.africa.customerservice.exception.InvalidEmailException;
 import com.crown.africa.customerservice.exception.UserException;
 import com.crown.africa.customerservice.services.UserService;
 import com.crown.africa.customerservice.web.payload.request.UserRequest;
-//import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
-import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,6 +43,22 @@ public class UserServiceTest {
                 .email("test@gmail.com")
                 .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
                 .build();
+    }
+
+    @Test
+    void testThatAccountNumberCannotBeLessThan10(){
+        BillingDetails billingDetails = new BillingDetails();
+        UserRequest request2 = UserRequest
+                .builder()
+                .id("2")
+                .firstName("test2")
+                .lastName("test2")
+                .email("test@gmail.com")
+                .billingDetails(new BillingDetails("12345678-01", BigDecimal.ONE))
+                .build();
+        //assert
+        Throwable exception = assertThrows(InvalidAccountNumberException.class,  ()-> userService.createUser(request2));
+        assertThat(exception.getMessage(), is("Account number cannot be less than 10 digits"));
     }
 
     @Test
