@@ -8,6 +8,8 @@ import com.crown.africa.customerservice.exception.InvalidAccountNumberException;
 import com.crown.africa.customerservice.exception.UserException;
 import com.crown.africa.customerservice.services.UserService;
 import com.crown.africa.customerservice.web.payload.request.UserRequest;
+//import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +21,9 @@ import java.math.BigDecimal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+//import static org.junit.jupiter.api.AssertTrue.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @DataMongoTest
@@ -68,6 +71,45 @@ public class UserServiceTest {
         //assert
         assertThrows(InvalidAccountNumberException.class, () -> billingDetails.setAccountNumber("1234567890-02"));
     }
+
+
+    @Test
+    void testThatWhenAccountNumberIsInvalid_ThrosException(){
+        UserRequest request2 = UserRequest
+                .builder()
+                .id("2")
+                .firstName("test2")
+                .lastName("test2")
+                .email("test@gmail.com")
+                .billingDetails(new BillingDetails("1234567890-02", BigDecimal.ONE))
+                .build();
+        assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
+    }
+    @Test
+    void testThatWhenAccountNumberIsInvalid_ThrowsException(){
+        UserRequest request2 = UserRequest
+                .builder()
+                .id("2")
+                .firstName("test2")
+                .lastName("test2")
+                .email("test@gmail.com")
+                .billingDetails(new BillingDetails("1234567890", BigDecimal.ONE))
+                .build();
+        assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
+    }
+
+//    @Test
+//    void testThatWhenEmailIsInvalid_ThrowsException(){
+//        UserRequest request2 = UserRequest
+//                .builder()
+//                .id("2")
+//                .firstName("test2")
+//                .lastName("test2")
+//                .email("test")
+//                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
+//                .build();
+////        assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
+//    }
 
     @Test
     void testThatUserCannotCreateAccountWithEmailThatAlreadyExist_throwException() {
