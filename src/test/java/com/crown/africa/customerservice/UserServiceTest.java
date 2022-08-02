@@ -16,8 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
-import java.math.BigDecimal;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,46 +39,15 @@ public class UserServiceTest {
                 .firstName("testFirstname")
                 .lastName("testLastname")
                 .email("test@gmail.com")
-//                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
                 .build();
-    }
-
-    @Test
-    void testThatAccountNumberCannotBeLessThan10(){
-        UserRequest request2 = UserRequest
-                .builder()
-                .id("2")
-                .firstName("test2")
-                .lastName("test2")
-                .email("test@gmail.com")
-//                .billingDetails(new BillingDetails("12345678-01", BigDecimal.ONE))
-                .build();
-        //assert
-        Throwable exception = assertThrows(InvalidAccountNumberException.class,  ()-> userService.createUser(request2));
-        assertThat(exception.getMessage(), is("Account number must be 10 digits"));
-    }
-
-    @Test
-    void testThatAccountNumberCannotGreaterThan10(){
-        UserRequest request2 = UserRequest
-                .builder()
-                .id("2")
-                .firstName("test2")
-                .lastName("test2")
-                .email("test@gmail.com")
-//                .billingDetails(new BillingDetails("1234567891012-01", BigDecimal.ONE))
-                .build();
-        //assert
-        Throwable exception = assertThrows(InvalidAccountNumberException.class,  ()-> userService.createUser(request2));
-        assertThat(exception.getMessage(), is("Account number must be 10 digits"));
     }
 
     @Test
     void testThatUserCanBeCreated(){
         User user = userService.createUser(request);
         assertThat(userService.getAllUsers().size(), is(1));
-        assertThat(user.getBillingDetails().getAccountNumber(), is("1234567890-01"));
-        assertThat(user.getBillingDetails().getTarrif(), is(BigDecimal.ONE));
+        assertThat(user.getFirstName(), is("testFirstname"));
+        assertThat(user.getLastName(), is("testLastname"));
     }
 
     @Test
@@ -96,34 +63,6 @@ public class UserServiceTest {
                 .build();
         //assert
         Throwable exception = assertThrows(InvalidAccountNumberException.class, () -> billingDetails.setAccountNumber("1234567890-02"));
-        assertThat(exception.getMessage(), is("Account number does not end with -01"));
-    }
-
-
-    @Test
-    void testThatWhenAccountNumberEndsWithvalueThatIsNot01_ThrowsException1(){
-        UserRequest request2 = UserRequest
-                .builder()
-                .id("2")
-                .firstName("test2")
-                .lastName("test2")
-                .email("test@gmail.com")
-//                .billingDetails(new BillingDetails("1234567890-02", BigDecimal.valueOf(1.5)))
-                .build();
-        Throwable exception = assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
-        assertThat(exception.getMessage(), is("Account number must be 10 digits"));
-    }
-    @Test
-    void testThatWhenAccountNumberDoesNotEndWith01_ThrowsException2(){
-        UserRequest request2 = UserRequest
-                .builder()
-                .id("2")
-                .firstName("test2")
-                .lastName("test2")
-                .email("test@gmail.com")
-//                .billingDetails(new BillingDetails("1234567890", BigDecimal.ONE))
-                .build();
-        Throwable exception = assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
         assertThat(exception.getMessage(), is("Account number does not end with -01"));
     }
 
@@ -159,7 +98,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testThatUserCanFindUserByEmail() {
+    void testThatUserCanFindUserById() {
         //when
         userService.createUser(request);
 

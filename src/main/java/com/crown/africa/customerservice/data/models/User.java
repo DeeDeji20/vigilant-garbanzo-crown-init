@@ -2,6 +2,7 @@ package com.crown.africa.customerservice.data.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @Document
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
     @Id
@@ -18,6 +20,6 @@ public class User {
     private String lastName;
     @NotBlank(message = "Email is mandatory") @Email
     private String email;
-    private BillingDetails billingDetails;
+    private String billingId;
 
 }
