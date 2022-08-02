@@ -1,4 +1,4 @@
-#RESTful API for a simple customer database.
+# RESTful API for a simple customer database.
 - Built using java/springboot and mongoDB.
 - APIs :-
     #### Endpoint to store a new customer
