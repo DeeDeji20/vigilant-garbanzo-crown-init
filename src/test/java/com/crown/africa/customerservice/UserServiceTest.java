@@ -41,24 +41,38 @@ public class UserServiceTest {
                 .firstName("testFirstname")
                 .lastName("testLastname")
                 .email("test@gmail.com")
-                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
+//                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
                 .build();
     }
 
     @Test
     void testThatAccountNumberCannotBeLessThan10(){
-        BillingDetails billingDetails = new BillingDetails();
         UserRequest request2 = UserRequest
                 .builder()
                 .id("2")
                 .firstName("test2")
                 .lastName("test2")
                 .email("test@gmail.com")
-                .billingDetails(new BillingDetails("12345678-01", BigDecimal.ONE))
+//                .billingDetails(new BillingDetails("12345678-01", BigDecimal.ONE))
                 .build();
         //assert
         Throwable exception = assertThrows(InvalidAccountNumberException.class,  ()-> userService.createUser(request2));
-        assertThat(exception.getMessage(), is("Account number cannot be less than 10 digits"));
+        assertThat(exception.getMessage(), is("Account number must be 10 digits"));
+    }
+
+    @Test
+    void testThatAccountNumberCannotGreaterThan10(){
+        UserRequest request2 = UserRequest
+                .builder()
+                .id("2")
+                .firstName("test2")
+                .lastName("test2")
+                .email("test@gmail.com")
+//                .billingDetails(new BillingDetails("1234567891012-01", BigDecimal.ONE))
+                .build();
+        //assert
+        Throwable exception = assertThrows(InvalidAccountNumberException.class,  ()-> userService.createUser(request2));
+        assertThat(exception.getMessage(), is("Account number must be 10 digits"));
     }
 
     @Test
@@ -73,13 +87,12 @@ public class UserServiceTest {
     @DisplayName("If account number doesnt end with -01 throws exception")
     void testThat_ThrowsException_WhenAccountNumberIsInvalid(){
         BillingDetails billingDetails = new BillingDetails();
-        UserRequest request2 = UserRequest
+        UserRequest
                 .builder()
                 .id("2")
                 .firstName("test2")
                 .lastName("test2")
                 .email("test@gmail.com")
-//                .billingDetails(new BillingDetails("1234567890-02", BigDecimal.ONE))
                 .build();
         //assert
         Throwable exception = assertThrows(InvalidAccountNumberException.class, () -> billingDetails.setAccountNumber("1234567890-02"));
@@ -95,10 +108,10 @@ public class UserServiceTest {
                 .firstName("test2")
                 .lastName("test2")
                 .email("test@gmail.com")
-                .billingDetails(new BillingDetails("1234567890-02", BigDecimal.valueOf(1.5)))
+//                .billingDetails(new BillingDetails("1234567890-02", BigDecimal.valueOf(1.5)))
                 .build();
         Throwable exception = assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
-        assertThat(exception.getMessage(), is("Account number does not end with -01"));
+        assertThat(exception.getMessage(), is("Account number must be 10 digits"));
     }
     @Test
     void testThatWhenAccountNumberDoesNotEndWith01_ThrowsException2(){
@@ -108,7 +121,7 @@ public class UserServiceTest {
                 .firstName("test2")
                 .lastName("test2")
                 .email("test@gmail.com")
-                .billingDetails(new BillingDetails("1234567890", BigDecimal.ONE))
+//                .billingDetails(new BillingDetails("1234567890", BigDecimal.ONE))
                 .build();
         Throwable exception = assertThrows(InvalidAccountNumberException.class, () -> userService.createUser(request2));
         assertThat(exception.getMessage(), is("Account number does not end with -01"));
@@ -122,7 +135,7 @@ public class UserServiceTest {
                 .firstName("test2")
                 .lastName("test2")
                 .email("test")
-                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
+//                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
                 .build();
         Throwable exception = assertThrows(InvalidEmailException.class, () -> userService.createUser(request2));
         assertThat(exception.getMessage(), is("Enter a valid email"));
@@ -138,7 +151,7 @@ public class UserServiceTest {
                 .firstName("test2")
                 .lastName("test2")
                 .email("test@gmail.com")
-                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
+//                .billingDetails(new BillingDetails("1234567890-01", BigDecimal.ONE))
                 .build();
         //assert
         Throwable exception = assertThrows(AuthException.class, () -> userService.createUser(request2));
